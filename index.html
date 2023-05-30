@@ -4,42 +4,57 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pic Pal - Parte 1</title>
-    <link rel="icon" href="picpal_favicon.png">
+    <title>Pic Pal - Parte 2</title>
+	<link rel="icon" href="picpal_favicon.png">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <script src="script.js"></script>
     <script type = "text/javascript"
-    src = "https://code.jquery.com/jquery-2.1.1.min.js"></script>           
- <script src = "https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.3/js/materialize.min.js">
- </script> 
- <script>
-    $(document).ready(function() {
-       $('select').material_select();
-    });
- </script>
+         src = "https://code.jquery.com/jquery-2.1.1.min.js"></script>           
+      <script src = "https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.3/js/materialize.min.js">
+      </script> 
+      <script>
+         $(document).ready(function() {
+            $('select').material_select();
+         });
+      </script>
 </head>
 <body>
-    <!--Gradiente de Fundo-->
-    <div class="background"></div>    
-    <!--Logo-->
-    <img src="picpal_logo.png" class="logo">
-    <!--Entrada de Dados-->
-    <h4><b>Escreva até 100 vezes qualquer número, e  caso não for inteiro, o programa arredondará e os colocará em ordem crescente.</b></h3>
-    <input id="inputNumber" type="number" placeholder="Insira o número aqui!"><br><br>
-    <button class="waves-effect waves-light btn" onclick="entradaDeDados()">Confirmar</button>
+	<!--Logo-->
+	<img src="picpal_logo.png" class="logo">
+	<br>
+	<div class="cadastro">
+	<img src="https://a.espncdn.com/i/teamlogos/soccer/500/2029.png" class="imagem">
+	
+	<!--Entrada de dados com input-->
+	<p>Selecione o tipo de cliente</p>
+	<select id="clientClass" class="white-text">
+		<option value="Cliente Padrão" selected="selected">Cliente</option>
+		<option value="Cliente Especial" class="white-text">Cliente Especial</option>
+		<option value="Cliente Devedor" class="blue-text">Cliente Devedor</option>
+	</select>
+	
+	<p>Insira o nome do cliente:</p>
+	<input id="nomeCliente" type="text" placeholder="Nome completo do cliente" required>
 
-    <!--Saída de Dados-->
-    <button class="waves-effect waves-light btn" onclick="relatorio()">Gerar relatório</button>
-    <p id="ultimoInserido"></p>
-    <p id="relatorioField"></p>
+	<p>Insira o CPF ou CNPJ do cliente: (apenas números)</p>
+	<input id="cpfCliente" type="number" placeholder="11122233344" required>
 
-    <!--Gerar número aleatório-->
-    <div id="positiondiv">
-        <div id="moveablediv">
-            <button class="waves-effect waves-teal btn-flat white-text" onclick="random()">random</button>
-        </div>
-    </div>
+	<p>Insira o CEP do cliente</p>
+	<input id="enderecoCliente" type="text" placeholder="Rua José das Mangas" required>
+
+	<p>Insira o telefone do cliente: (apenas númeors)</p>
+	<input id="telefoneCliente" type="number" placeholder="DD000000000" required>
+</div>	
+	<br>
+	<!--Botão para mandar os dados inseridos para o js-->
+	<button onclick="entradaDeDados()">Confirmar</button>
+	
+	<br>
+	<!--Saída de Dados-->
+	<button onclick="relatorio()">Gerar relatório</button>
+	<br><hr>
+	<p id="relatorio">
 
 </body>
 </html>

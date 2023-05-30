@@ -1,101 +1,112 @@
 //Setup
-const numeros = [];
 let i = 0;
 let j = 0;
-let temp = "";
-let rng = 0;
+const clienteDados = [];
+let relatorioText = "";
+let cep = "";
+let logradouro = "";
+let bairro = "";
+let cidade = "";
+let estado = "";
+var enderecoCompleto = "";
+var enderecoCompletao = "oi";
 
-//Input de até 100 números
-function entradaDeDados()
-{
-  if (i <= 99)
-  {
-    numeros[i] = document.getElementById("inputNumber").value;
-    numeros[i] = Math.round(numeros[i]);
-    document.getElementById("ultimoInserido").innerHTML = "O último número inserido foi: " + numeros[i];
-    i++;
+//Entrada de dados de todos os inputs 
+//Função assíncrona para não dar conflito com a API Via CEP
+async function entradaDeDados() {
+  clienteDados[i, j] = "Tipo de Cliente: " + document.getElementById("clientClass").value;
+  j++;
+
+  clienteDados[i, j] = "Nome do Cliente: " + document.getElementById("nomeCliente").value;
+  j++;
+
+  clienteDados[i, j] = "CPF/CNPJ do Cliente: " + document.getElementById("cpfCliente").value;
+  j++;
+
+  //Fazer a requisição com a API dos Correios
+  cepCliente = document.getElementById("enderecoCliente").value;
+
+  try {
+    enderecoCompletao = await buscarEndereco(cepCliente);
+  } catch (error) {
+    console.log("Ocorreu um erro ao buscar o endereço:", error);
+    return;
   }
-  else
-  {
-    let erro = document.createElement("p");
-    erro.innerHTML = "Máximo de números inseridos, operação com falha!";
-    document.body.appendChild(erro);
+
+  clienteDados[i, j] = "Endereço do Cliente: " + enderecoCompletao;
+  j++;
+
+  clienteDados[i, j] = "Telefone do Cliente: " + document.getElementById("telefoneCliente").value;
+  j++;
+
+  //Informar o limite 
+  if (clienteDados[i, 0] == "Tipo de Cliente: Cliente Padrão") {
+    //Gerador de limite
+    let rng1 = Math.round(Math.random() * 3069);
+    let rng2 = rng1 - Math.round(Math.random() * rng1);
+    clienteDados[i, j] = "Limite disponível: R$" + rng2 + " de R$" + rng1;
+  } else if (clienteDados[i, 0] == "Tipo de Cliente: Cliente Especial") {
+    clienteDados[i, j] = "Limite do Cliente: Limite Ilimitado";
+  } else {
+    //Gerador de limite
+    let rng1 = Math.round(Math.random() * 10420);
+    let rng2 = rng1 - Math.round(Math.random() * rng1);
+    clienteDados[i, j] = "Limite estourado: R$" + rng1 + " de R$" + rng2;
   }
+  j = 0;
+  i++;
+
+  //Preparar a varável de relatório com todos os clientes
+  relatorioText += clienteDados.join("<br>") + "<hr>";
 }
 
-//Gerar relatório
-function relatorio()
-{
-  //Ordenar em ordem crescente
-  for(i = 0; i < numeros.length; i++)
-  {
-    for(j = i + 1; j < numeros.length; j++)
-    {
-      if(numeros[i] > numeros[j])
+//Mostrar o relatório
+function relatorio() {
+  document.getElementById("relatorio").innerHTML = relatorioText;
+}
+
+//Via CEP
+function buscarEndereco(valor) {
+  cep = valor.replace(/\D/g, "");
+
+  //Verificar se o Campo CEP é válido
+  if (cep.length !== 8) {
+    alert("O CEP deve conter 8 dígitos!");
+    return Promise.reject("CEP inválido"); 
+  }
+
+  //API dos Correios
+  const url = `https://viacep.com.br/ws/${cep}/json/`;
+
+  //Verificar o CEP
+  return fetch(url)
+    .then((response) => response.json())
+    .then((data) => {
+      //Se erro, mostrar erro
+      if (data.erro) {
+        alert("CEP não encontrado!");
+        //Interromper execução
+        throw new Error("CEP não encontrado");
+      } 
+      //Pegar informações
+      else 
       {
-        temp = numeros[i];
-        numeros[i] = numeros[j];
-        numeros[j] = temp;
+        logradouro = data.logradouro;
+        bairro = data.bairro;
+        cidade = data.localidade;
+        estado = data.uf;
+
+        //Compilar tudo em uma variável formatada
+        enderecoCompleto = "<br>CEP: " + cep + "<br>Logradouro: " + logradouro + "<br>Bairro " + bairro + "<br>Cidade " + cidade + "<br>Estado " + estado;
+
+        //Retornar resultado
+        return enderecoCompleto;
       }
-    }
-  }
-  let relatorio = numeros.join("<br>");
-  document.getElementById("relatorioField").innerHTML = "Os números em ordem crescente são:<br>" + relatorio;
+    })
+
+    //Se der erro, deu erro
+    .catch((error) => {
+      console.log("Ocorreu um erro na requisição:", error);
+      throw error;
+    });
 }
-
-//Gerar número aleatório e adicionar ao array
-function random(){
-  rng = Math.round(Math.random() * 100);
-  document.getElementById("ultimoInserido").innerHTML = "O último número inserido foi: " + rng;
-  numeros[i] = rng;
-  i++
-}
-
-//Mover botão "random"
-//Carregar essa parte do script apenas depois de carregar a página toda
-document.addEventListener('DOMContentLoaded', function() {
-
-  //Escolher elemento arratável
-  dragElement(document.getElementById("moveablediv"));
-
-  //Permitir que seja arratável
-  function dragElement(elmnt) {
-    //Posições do cursor
-    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-    //Mover conforme o cursor se movimenta ao apertar o botão do mouse
-    elmnt.onmousedown = dragMouseDown;
-
-    //Função "Ao pressionar o botão do mouse"
-    function dragMouseDown(e) {
-      e = e || window.event;
-      e.preventDefault();
-      //Pega a posição do cursor so mouse
-      pos3 = e.clientX;
-      pos4 = e.clientY;
-      document.onmouseup = closeDragElement;
-      //Chama a função quando o cursor for movido
-      document.onmousemove = elementDrag;
-    }
-
-    //Função "Mover a div"
-    function elementDrag(e) {
-      e = e || window.event;
-      e.preventDefault();
-      //Atualiza as variáveis com a nova posição do cursor
-      pos1 = pos3 - e.clientX;
-      pos2 = pos4 - e.clientY;
-      pos3 = e.clientX;
-      pos4 = e.clientY;
-      //Muda a posição do div
-      elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-      elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-    }
-
-    //Função "Parar de mover"
-    function closeDragElement() {
-      //Para de executar quando o botão do mouse for solto
-      document.onmouseup = null;
-      document.onmousemove = null;
-    }
-  }
-});
